@@ -2,6 +2,7 @@ package com.example.vmac.WatBot;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Typeface;
 import android.net.ConnectivityManager;
@@ -107,6 +108,7 @@ public class MainActivity extends AppCompatActivity {
     inputMessage = findViewById(R.id.message);
     btnSend = findViewById(R.id.btn_send);
     btnRecord = findViewById(R.id.btn_record);//voice
+
     String customFont = "Montserrat-Regular.ttf";
     Typeface typeface = Typeface.createFromAsset(getAssets(), customFont);
     inputMessage.setTypeface(typeface);
@@ -173,13 +175,18 @@ public class MainActivity extends AppCompatActivity {
         btnRecord.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                recordMessage();
+//                recordMessage();
+                Intent intent = new Intent(MainActivity.this, com.example.vmac.WatBot.SpeechToText.class);
+                startActivity(intent);
             }
         });
-
-        createServices();
-        sendMessage();
+//
+//        createServices();
+//        sendMessage();
     };
+
+
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
