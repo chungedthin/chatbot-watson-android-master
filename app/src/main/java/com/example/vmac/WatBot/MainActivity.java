@@ -265,7 +265,6 @@ public class MainActivity extends AppCompatActivity {
               switch (motionEvent.getAction()) {
                   case MotionEvent.ACTION_UP:
                       mSpeechRecognizer.stopListening();
-                      inputMessage.setHint("You will see input here");
                       break;
 
                   case MotionEvent.ACTION_DOWN:
