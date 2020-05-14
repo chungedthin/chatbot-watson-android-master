@@ -76,12 +76,14 @@ public class MainActivity extends AppCompatActivity {
   private boolean permissionToRecordAccepted = false;
   private static final int REQUEST_RECORD_AUDIO_PERMISSION = 200;
   private static String TAG = "MainActivity";
+  private String voiceMessage;
   private static final int RECORD_REQUEST_CODE = 101;
   private boolean listening = false;
   private MicrophoneInputStream capture;
   private Context mContext;
   private MicrophoneHelper microphoneHelper;
 
+  private Message outMessage;
   private Assistant watsonAssistant;
   private Response<SessionResponse> watsonAssistantSession;
   private SpeechToText speechService;
@@ -89,9 +91,6 @@ public class MainActivity extends AppCompatActivity {
 
 
   private TTS tts;
-
-
-
 
 
   private void createServices() {
@@ -182,6 +181,8 @@ public class MainActivity extends AppCompatActivity {
 
         speechToText();
 
+        compareText(outMessage, voiceMessage);
+
 //        btnRecord.setOnClickListener(new View.OnClickListener() {
 //            @Override
 //            public void onClick(View v) {
@@ -191,10 +192,25 @@ public class MainActivity extends AppCompatActivity {
 //            }
 //        });
 //
-//        createServices();
+//      createServices();
 //        sendMessage();
     };
 
+
+  public void compareText(Message message, String voiceMessage){
+    String compareMessage =  message.getMessage();
+    for(int i=0;i<voiceMessage.length();i++){
+        if(compareMessage.indexOf(voiceMessage)!=-1){
+            //exist
+            inputMessage.setText("exist");
+        }
+        else{
+            //not exist
+            inputMessage.setText("not exist");
+        }
+    }
+
+  }
 
 
   @SuppressLint("ClickableViewAccessibility")
@@ -238,12 +254,12 @@ public class MainActivity extends AppCompatActivity {
           @Override
           public void onResults(Bundle bundle) {
               //getting all the matches
-              ArrayList<String> matches = bundle
-                      .getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
-
+              ArrayList<String> matches = bundle.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
+              voiceMessage = matches.get(0);
+              Log.d("voice message: ", voiceMessage);
               //displaying the first match
               if (matches != null)
-                  inputMessage.setText(matches.get(0));
+                  inputMessage.setText(voiceMessage);
           }
 
           @Override
@@ -256,7 +272,6 @@ public class MainActivity extends AppCompatActivity {
 
           }
       });
-
 
 
       btnRecord.setOnTouchListener(new View.OnTouchListener() {
@@ -278,8 +293,6 @@ public class MainActivity extends AppCompatActivity {
       });
 
   }
-
-
 
     private void checkPermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -403,7 +416,6 @@ public class MainActivity extends AppCompatActivity {
                                         List<RuntimeResponseGeneric> responses = response.getResult().getOutput().getGeneric();
 
                                         for (RuntimeResponseGeneric r : responses) {
-                                            Message outMessage;
                                             switch (r.responseType()) {
                                                 case "text":
                                                     outMessage = new Message();
